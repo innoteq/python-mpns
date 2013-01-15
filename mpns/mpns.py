@@ -59,8 +59,8 @@ class MPNSBase(object):
             if k in self.headers: self.headers.pop(k)
 
         # set per-message headers if necessary
-        if msgid:
-            self.headers[self.HEADER_MESSAGE_ID] = str(msgid) # TODO: validate UUID
+        if message_id:
+            self.headers[self.HEADER_MESSAGE_ID] = str(message_id) # TODO: validate UUID
 
         if callback_uri:
             self.headers[self.HEADER_CALLBACK_URI] = str(callback_uri)
