@@ -5,6 +5,7 @@ import requests
 
 # MPNS overview: http://msdn.microsoft.com/en-us/library/ff402558%28v=vs.92%29.aspx
 # Protocol specification: http://msdn.microsoft.com/en-us/library/hh202945%28v=vs.92%29.aspx
+# WP8 enhancements: http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202948%28v=vs.105%29.aspx
 # Error codes: http://msdn.microsoft.com/en-us/library/ff941100%28v=VS.92%29.aspx
 
 # Also see Authenticated Web Service: http://msdn.microsoft.com/en-us/library/ff941099%28v=vs.92%29.aspx
@@ -66,6 +67,12 @@ class MPNSBase(object):
         req = requests.post(uri, data=data, headers=self.headers)
 
 
+# TODO: create separate classes for FlipTile, Cycle and Iconic notifications (also add version 2.0)
+# WP8 specific:
+# self.clearable_subelement(tile, '{WPNotification}SmallBackgroundImage' 'small_background_image', payload)
+# self.clearable_subelement(tile, '{WPNotification}WideBackgroundImage' 'wide_background_image', payload)
+# self.clearable_subelement(tile, '{WPNotification}WideBackBackgroundImage' 'wide_back_background_image', payload)
+# self.clearable_subelement(tile, '{WPNotification}WideBackContent' 'wide_back_content', payload)
 class MPNSTile(MPNSBase):
     DELAY_IMMEDIATE = 1
     DELAY_450S = 11
