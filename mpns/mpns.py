@@ -29,6 +29,7 @@ class MPNSBase(object):
             'Accept': 'application/*',
             self.HEADER_NOTIFICATION_CLASS: str(self.delay),
             }
+        ET.register_namespace('wp', 'WPNotification')
 
     def set_target(self, target):
         self.headers[self.HEADER_TARGET] = target
