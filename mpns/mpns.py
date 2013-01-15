@@ -67,7 +67,8 @@ class MPNSBase(object):
             self.headers[self.HEADER_CALLBACK_URI] = str(callback_uri)
 
         data = self.prepare_payload(payload)
-        req = requests.post(uri, data=data, headers=self.headers)
+        res = requests.post(uri, data=data, headers=self.headers)
+        return res
 
 
 # TODO: create separate classes for FlipTile, Cycle and Iconic notifications (also add version 2.0)
