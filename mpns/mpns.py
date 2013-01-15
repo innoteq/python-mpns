@@ -1,3 +1,6 @@
+import xml.etree.cElementTree as ET
+from cStringIO import StringIO
+
 import requests
 
 # MPNS overview: http://msdn.microsoft.com/en-us/library/ff402558%28v=vs.92%29.aspx
@@ -27,6 +30,26 @@ class MPNSBase(object):
     def set_target(self, target):
         self.headers[self.HEADER_TARGET] = target
 
+    def serialize_tree(self, tree):
+        file = StringIO()
+        tree.write(file, encoding='utf-8', xml_declaration=True, method='xml')
+        contents = file.getvalue()
+        file.close()
+        return contents
+
+    def optional_attribute(element, attribute, payload_param, payload):
+        if payload_param in payload:
+            element.attrib['attribute'] = payload[payload_param]
+
+    def optional_subelement(parent, element, payload_param, payload):
+        if payload_param in payload:
+            el = ET.SubElement(parent, element)
+            el.text = payload[payload_param]
+            return el
+
+    def prepare_payload(self, payload):
+        raise NotImplementedError('Subclasses should override prepare_payload method')
+
     def send(uri, payload, message_id=None, callback_uri=None):
         # reset per-message headers
         for k in (self.HEADER_MESSAGE_ID, self.HEADER_CALLBACK_URI):
@@ -39,6 +62,9 @@ class MPNSBase(object):
         if callback_uri:
             self.headers[self.HEADER_CALLBACK_URI] = str(callback_uri)
 
+        data = self.prepare_payload(payload)
+        req = requests.post(uri, data=data, headers=self.headers)
+
 
 class MPNSTile(MPNSBase):
     DELAY_IMMEDIATE = 1
@@ -48,6 +74,28 @@ class MPNSTile(MPNSBase):
     def __init__(self, *args, **kwargs):
         super(MPNSTile, self).__init__(*args, **kwargs)
         self.set_target('tile') # TODO: flip tile
+
+    def clearable_subelement(parent, element, payload_param, payload):
+        if payload_param in payload:
+            el = ET.SubElement(parent, element)
+            if payload[payload_param] is None:
+                el.attrib['Action'] = 'Clear'
+            else:
+                el.text = payload[payload_param]
+            return el
+
+    def prepare_payload(payload):
+        root = ET.Element("{WPNotification}Notification")
+        tile = ET.SubElement(root, '{WPNotification}Tile')
+        self.optional_attribute(tile, 'Id', 'id', payload)
+        self.optional_attribute(tile, 'Template', 'template', payload)
+        self.optional_subelement(tile, '{WPNotification}BackgroundImage', 'background_image', payload)
+        self.clearable_subelement(tile, '{WPNotification}Count', 'count', payload)
+        self.clearable_subelement(tile, '{WPNotification}Title', 'title', payload)
+        self.clearable_subelement(tile, '{WPNotification}BackBackgroundImage', 'back_background_image', payload)
+        self.clearable_subelement(tile, '{WPNotification}BackTitle', 'back_title', payload)
+        self.clearable_subelement(tile, '{WPNotification}BackContent', 'back_content', payload)
+        return self.serialize_tree(ET.ElementTree(root))
 
 
 class MPNSToast(MPNSBase):
@@ -59,6 +107,14 @@ class MPNSToast(MPNSBase):
         super(MPNSToast, self).__init__(*args, **kwargs)
         self.set_target('token')
 
+    def prepare_payload(payload):
+        root = ET.Element("{WPNotification}Notification")
+        toast = ET.SubElement(root, '{WPNotification}Toast')
+        self.optional_subelement(toast, '{WPNotification}Text1', 'text1', payload)
+        self.optional_subelement(toast, '{WPNotification}Text2', 'text2', payload)
+        self.optional_subelement(toast, '{WPNotification}Param', 'param', payload) # TODO: validate param (/ and length)
+        return self.serialize_tree(ET.ElementTree(root))
+
 
 class MPNSRaw(MPNSBase):
     DELAY_IMMEDIATE = 3
@@ -68,3 +124,6 @@ class MPNSRaw(MPNSBase):
     def __init__(self, *args, **kwargs):
         super(MPNSRaw, self).__init__(*args, **kwargs)
         self.set_target('raw')
+
+    def prepare_payload(payload):
+        return payload
