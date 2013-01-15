@@ -40,11 +40,11 @@ class MPNSBase(object):
         file.close()
         return contents
 
-    def optional_attribute(element, attribute, payload_param, payload):
+    def optional_attribute(self, element, attribute, payload_param, payload):
         if payload_param in payload:
             element.attrib['attribute'] = payload[payload_param]
 
-    def optional_subelement(parent, element, payload_param, payload):
+    def optional_subelement(self, parent, element, payload_param, payload):
         if payload_param in payload:
             el = ET.SubElement(parent, element)
             el.text = payload[payload_param]
@@ -53,7 +53,7 @@ class MPNSBase(object):
     def prepare_payload(self, payload):
         raise NotImplementedError('Subclasses should override prepare_payload method')
 
-    def send(uri, payload, message_id=None, callback_uri=None):
+    def send(self, uri, payload, message_id=None, callback_uri=None):
         # reset per-message headers
         for k in (self.HEADER_MESSAGE_ID, self.HEADER_CALLBACK_URI):
             if k in self.headers: self.headers.pop(k)
@@ -93,7 +93,7 @@ class MPNSTile(MPNSBase):
                 el.text = payload[payload_param]
             return el
 
-    def prepare_payload(payload):
+    def prepare_payload(self, payload):
         root = ET.Element("{WPNotification}Notification")
         tile = ET.SubElement(root, '{WPNotification}Tile')
         self.optional_attribute(tile, 'Id', 'id', payload)
@@ -116,7 +116,7 @@ class MPNSToast(MPNSBase):
         super(MPNSToast, self).__init__(*args, **kwargs)
         self.set_target('token')
 
-    def prepare_payload(payload):
+    def prepare_payload(self, payload):
         root = ET.Element("{WPNotification}Notification")
         toast = ET.SubElement(root, '{WPNotification}Toast')
         self.optional_subelement(toast, '{WPNotification}Text1', 'text1', payload)
@@ -134,5 +134,5 @@ class MPNSRaw(MPNSBase):
         super(MPNSRaw, self).__init__(*args, **kwargs)
         self.set_target('raw')
 
-    def prepare_payload(payload):
+    def prepare_payload(self, payload):
         return payload
