@@ -116,7 +116,7 @@ class MPNSToast(MPNSBase):
 
     def __init__(self, *args, **kwargs):
         super(MPNSToast, self).__init__(*args, **kwargs)
-        self.set_target('token')
+        self.set_target('token') # toast ???
 
     def prepare_payload(self, payload):
         root = ET.Element("{WPNotification}Notification")
