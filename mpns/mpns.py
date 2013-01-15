@@ -27,7 +27,7 @@ class MPNSBase(object):
     def set_target(self, target):
         self.headers[self.HEADER_TARGET] = target
 
-    def send(uri, message, message_id=None, callback_uri=None):
+    def send(uri, payload, message_id=None, callback_uri=None):
         # reset per-message headers
         for k in (self.HEADER_MESSAGE_ID, self.HEADER_CALLBACK_URI):
             if k in self.headers: self.headers.pop(k)
