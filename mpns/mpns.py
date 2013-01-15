@@ -11,16 +11,33 @@ class MPNSBase(object):
     DELAY_450S = None
     DELAY_900S = None
 
+    HEADER_NOTIFICATION_CLASS = 'X-NotificationClass'
+    HEADER_TARGET = 'X-WindowsPhone-Target'
+    HEADER_MESSAGE_ID = 'X-MessageID'
+    HEADER_CALLBACK_URI = 'X-CallbackURI'
+
     def __init__(self, delay=None):
         self.delay = delay or self.DELAY_IMMEDIATE
         self.headers = {
             'Content-Type': 'text/xml',
             'Accept': 'application/*',
-            'X-NotificationClass': str(self.delay),
+            self.HEADER_NOTIFICATION_CLASS: str(self.delay),
             }
 
     def set_target(self, target):
-        self.headers['X-WindowsPhone-Target'] = target
+        self.headers[self.HEADER_TARGET] = target
+
+    def send(uri, message, message_id=None, callback_uri=None):
+        # reset per-message headers
+        for k in (self.HEADER_MESSAGE_ID, self.HEADER_CALLBACK_URI):
+            if k in self.headers: self.headers.pop(k)
+
+        # set per-message headers if necessary
+        if msgid:
+            self.headers[self.HEADER_MESSAGE_ID] = str(msgid) # TODO: validate UUID
+
+        if callback_uri:
+            self.headers[self.HEADER_CALLBACK_URI] = str(callback_uri)
 
 
 class MPNSTile(MPNSBase):
