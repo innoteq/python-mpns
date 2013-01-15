@@ -10,6 +10,8 @@ import requests
 
 # Also see Authenticated Web Service: http://msdn.microsoft.com/en-us/library/ff941099%28v=vs.92%29.aspx
 
+# TODO: test escaping
+
 class MPNSBase(object):
     DELAY_IMMEDIATE = None
     DELAY_450S = None
