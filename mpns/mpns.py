@@ -84,7 +84,7 @@ class MPNSTile(MPNSBase):
 
     def __init__(self, *args, **kwargs):
         super(MPNSTile, self).__init__(*args, **kwargs)
-        self.set_target('tile') # TODO: flip tile
+        self.set_target('token') # TODO: flip tile
 
     def clearable_subelement(parent, element, payload_param, payload):
         if payload_param in payload:
@@ -116,7 +116,7 @@ class MPNSToast(MPNSBase):
 
     def __init__(self, *args, **kwargs):
         super(MPNSToast, self).__init__(*args, **kwargs)
-        self.set_target('token') # toast ???
+        self.set_target('toast')
 
     def prepare_payload(self, payload):
         root = ET.Element("{WPNotification}Notification")
