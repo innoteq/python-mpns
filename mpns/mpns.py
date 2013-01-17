@@ -94,6 +94,26 @@ class MPNSBase(object):
         return status
 
     def send(self, uri, payload, message_id=None, callback_uri=None):
+        """
+        Send push message. Input parameters:
+
+        uri - subscription uri
+        payload - message payload (see help for subclasses)
+        message_id - optional message id (UUID)
+        callback_url - optional callback url (only for authenticated web services)
+
+        Returns message status dictionary with the following elements:
+
+        device_connection_status - Connected, InActive, Disconnected, TempDisconnected
+        subscription_status - Active, Expired
+        notification_status - Received, Suppressed, Dropped, QueueFull
+        message_id - submitted message_id or 00000000-0000-0000-0000-000000000000
+        http_status_code - HTTP response status code
+        error - optional error message
+        backoff_seconds - optional recommended throttling delay (in seconds)
+        drop_subscription - optional flag to indicate that subscription uri is invalid
+        """
+
         # reset per-message headers
         for k in (self.HEADER_MESSAGE_ID, self.HEADER_CALLBACK_URI):
             if k in self.headers: self.headers.pop(k)
@@ -117,6 +137,19 @@ class MPNSBase(object):
 # self.clearable_subelement(tile, '{WPNotification}WideBackBackgroundImage' 'wide_back_background_image', payload)
 # self.clearable_subelement(tile, '{WPNotification}WideBackContent' 'wide_back_content', payload)
 class MPNSTile(MPNSBase):
+    """
+    Tile notification. Payload is a dictionary with the following optional elements:
+
+    id
+    template
+    background_image
+    count
+    title
+    back_background_image
+    back_title
+    back_content
+    """
+
     DELAY_IMMEDIATE = 1
     DELAY_450S = 11
     DELAY_900S = 21
@@ -149,6 +182,13 @@ class MPNSTile(MPNSBase):
 
 
 class MPNSToast(MPNSBase):
+    """
+    Toast notification. Payload is a dictionary with the following optional elements:
+
+    text1
+    text2
+    param
+    """
     DELAY_IMMEDIATE = 2
     DELAY_450S = 12
     DELAY_900S = 22
@@ -167,6 +207,9 @@ class MPNSToast(MPNSBase):
 
 
 class MPNSRaw(MPNSBase):
+    """
+    Raw notification. Payload format can be arbitrary.
+    """
     DELAY_IMMEDIATE = 3
     DELAY_450S = 13
     DELAY_900S = 23
