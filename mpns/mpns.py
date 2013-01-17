@@ -54,6 +54,24 @@ class MPNSBase(object):
     def prepare_payload(self, payload):
         raise NotImplementedError('Subclasses should override prepare_payload method')
 
+    def parse_response(self, response):
+        # 200 ok
+        # 400 invalid payload or subscription uri
+        # 401 probably invalid subscription uri
+        # 404 invalid subscription uri
+        # 405 invalid method
+        # 406 per-day throttling
+        # 412 device inactive, try once per hour
+        # 503 server unavailable
+
+        status = {
+            'device_connection_status': response.headers.get('x-deviceconnectionstatus', ''), # Connected, InActive, Disconnected, TempDisconnected
+            'subscription_status': response.headers.get('x-subscriptionstatus', ''),          # Active, Expired
+            'notification_status': response.headers.get('x-notificationstatus', ''),          # Received, Suppressed, Dropped, QueueFull
+            'message_id': response.headers.get('x-messageid'),                                # 00000000-0000-0000-0000-000000000000
+            }
+        return status
+
     def send(self, uri, payload, message_id=None, callback_uri=None):
         # reset per-message headers
         for k in (self.HEADER_MESSAGE_ID, self.HEADER_CALLBACK_URI):
@@ -68,7 +86,7 @@ class MPNSBase(object):
 
         data = self.prepare_payload(payload)
         res = requests.post(uri, data=data, headers=self.headers)
-        return res
+        return self.parse_response(res)
 
 
 # TODO: create separate classes for FlipTile, Cycle and Iconic notifications (also add version 2.0)
