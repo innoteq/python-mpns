@@ -20,8 +20,8 @@ setup(
     author_email='arnold.maxim@gmail.com',
     license='BSD',
     url='http://github.com/max-arnold/python-mpns',
-    keywords='mobile push notification microsoft',
-    description='Python client for Microsoft Push Notification Service.',
+    keywords='mobile push notification microsoft mpns',
+    description='Python client for Microsoft Push Notification Service (MPNS).',
     long_description=open(os.path.abspath(os.path.join(os.path.dirname(__file__), 'README.md')), 'rb').read(),
     classifiers=[
         'Development Status :: 3 - Alpha',

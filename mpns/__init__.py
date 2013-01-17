@@ -1,1 +1,1 @@
-from .mpns import MPNSTile, MPNSToast, MPNSRaw
+from .notification import MPNSTile, MPNSToast, MPNSRaw
