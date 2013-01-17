@@ -55,21 +55,42 @@ class MPNSBase(object):
         raise NotImplementedError('Subclasses should override prepare_payload method')
 
     def parse_response(self, response):
-        # 200 ok
-        # 400 invalid payload or subscription uri
-        # 401 probably invalid subscription uri
-        # 404 invalid subscription uri
-        # 405 invalid method
-        # 406 per-day throttling
-        # 412 device inactive, try once per hour
-        # 503 server unavailable
-
         status = {
             'device_connection_status': response.headers.get('x-deviceconnectionstatus', ''), # Connected, InActive, Disconnected, TempDisconnected
             'subscription_status': response.headers.get('x-subscriptionstatus', ''),          # Active, Expired
             'notification_status': response.headers.get('x-notificationstatus', ''),          # Received, Suppressed, Dropped, QueueFull
             'message_id': response.headers.get('x-messageid'),                                # 00000000-0000-0000-0000-000000000000
             }
+
+        code = response.status_code
+        status['http_status_code'] = code
+
+        if code == 200:
+            if status['notification_status'] == 'QueueFull':
+                status['error'] = 'Queue full, try again later'
+                status['backoff_seconds'] = 60
+        elif code == 400:
+            status['error'] = 'Bad Request - invalid payload or subscription URI'
+        elif code == 401:
+            status['error'] = 'Unauthorized - invalid token or subscription URI'
+            status['drop_subscription'] = True
+        elif code == 404:
+            status['error'] = 'Not Found - subscription URI is invalid'
+            status['drop_subscription'] = True
+        elif code == 405:
+            status['error'] = 'Invalid Method' # (this should not happen, module uses only POST method)
+        elif code == 406:
+            status['error'] = 'Not Acceptable - per-day throttling limit reached'
+            status['backoff_seconds'] = 24 * 60 * 60
+        elif code == 412:
+            status['error'] = 'Precondition Failed - device inactive, try once per-hour'
+            status['backoff_seconds'] = 60 * 60
+        elif code == 503:
+            status['error'] = 'Service Unavailable - try again later'
+            status['backoff_seconds'] = 60
+        else:
+            status['error'] = 'Unexpected status'
+
         return status
 
     def send(self, uri, payload, message_id=None, callback_uri=None):
