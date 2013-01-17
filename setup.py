@@ -12,9 +12,6 @@ setup(
     name='python-mpns',
     version=__version__,
 
-    # Packaging options.
-    include_package_data=True,
-
     # Package dependencies.
     install_requires=['requests==1.1.0'],
 
@@ -34,9 +31,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Communications :: Telephony',
         'Topic :: Internet'
-    ]
-    packages=[
-        'mpns',
     ],
-    platforms='any'
+    packages=['mpns'],
+    platforms='any',
 )
