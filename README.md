@@ -1,7 +1,7 @@
 python-mpns
 ===========
 
-Python module for Microsoft Push Notification Service (MPNS)
+Python module for Microsoft Push Notification Service (MPNS) for Windows Phone.
 
 Useful links
 ------------
