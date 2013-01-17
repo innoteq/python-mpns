@@ -125,7 +125,7 @@ class MPNSTile(MPNSBase):
         super(MPNSTile, self).__init__(*args, **kwargs)
         self.set_target('token') # TODO: flip tile
 
-    def clearable_subelement(parent, element, payload_param, payload):
+    def clearable_subelement(self, parent, element, payload_param, payload):
         if payload_param in payload:
             el = ET.SubElement(parent, element)
             if payload[payload_param] is None:
