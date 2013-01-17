@@ -16,7 +16,7 @@ setup(
     include_package_data=True,
 
     # Package dependencies.
-    install_requires=['simplejson', 'requests==1.0.4'],
+    install_requires=['requests==1.1.0'],
 
     # Metadata for PyPI.
     author='Max Arnold',
