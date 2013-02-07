@@ -86,7 +86,7 @@ class MPNSBase(object):
 
         return status
 
-    def send(self, uri, payload, message_id=None, callback_uri=None):
+    def send(self, uri, payload, message_id=None, callback_uri=None, debug=False):
         """
         Send push message. Input parameters:
 
@@ -120,7 +120,11 @@ class MPNSBase(object):
 
         data = self.prepare_payload(payload)
         res = requests.post(uri, data=data, headers=self.headers)
-        return self.parse_response(res)
+        result = self.parse_response(res)
+        if debug:
+            result['request'] = {'data': data, 'headers': dict(self.headers) }
+            result['response'] = {'status': res.status_code, 'headers': dict(res.headers), 'text': res.text}
+        return result
 
 
 # TODO: create separate classes for FlipTile, Cycle and Iconic notifications (also add version 2.0)
