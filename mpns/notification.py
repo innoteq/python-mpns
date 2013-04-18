@@ -1,5 +1,11 @@
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 from cStringIO import StringIO
+
+try:
+    register_namespace = ET.register_namespace
+except AttributeError:
+    def register_namespace(prefix, uri):
+        ET._namespace_map[uri] = prefix
 
 import requests
 
@@ -22,15 +28,15 @@ class MPNSBase(object):
             'Accept': 'application/*',
             self.HEADER_NOTIFICATION_CLASS: str(self.delay),
             }
-        ET.register_namespace('wp', 'WPNotification')
+        register_namespace('wp', 'WPNotification')
 
     def set_target(self, target):
         self.headers[self.HEADER_TARGET] = target
 
     def serialize_tree(self, tree):
         file = StringIO()
-        tree.write(file, encoding='utf-8', xml_declaration=True, method='xml')
-        contents = file.getvalue()
+        tree.write(file, encoding='utf-8')
+        contents = "<?xml version='1.0' encoding='utf-8'?>" + file.getvalue()
         file.close()
         return contents
 

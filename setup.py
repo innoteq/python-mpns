@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 __author__ = 'Max Arnold <arnold.maxim@gmail.com>'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 setup(
     name='python-mpns',
