@@ -92,7 +92,7 @@ class MPNSBase(object):
 
         return status
 
-    def send(self, uri, payload, message_id=None, callback_uri=None, debug=False):
+    def send(self, uri, payload, message_id=None, callback_uri=None, cert=None, key=None, debug=False):
         """
         Send push message. Input parameters:
 
@@ -125,7 +125,17 @@ class MPNSBase(object):
             self.headers[self.HEADER_CALLBACK_URI] = str(callback_uri)
 
         data = self.prepare_payload(payload)
-        res = requests.post(uri, data=data, headers=self.headers)
+        
+        # put cert and key into tuple unless it's in one file
+        certs = None
+        if cert is not None and key is not None:
+            certs = (cert, key)
+        elif cert is not None:
+            certs = cert
+        elif key is not None:
+            certs = key
+
+        res = requests.post(uri, data=data, headers=self.headers, cert=certs)
         result = self.parse_response(res)
         if debug:
             result['request'] = {'data': data, 'headers': dict(self.headers) }
@@ -223,3 +233,4 @@ class MPNSRaw(MPNSBase):
 
     def prepare_payload(self, payload):
         return payload
+
