@@ -92,14 +92,18 @@ class MPNSBase(object):
 
         return status
 
-    def send(self, uri, payload, message_id=None, callback_uri=None, cert=None, key=None, debug=False):
+    def send(self, uri, payload, message_id=None, callback_uri=None, cert=None, debug=False):
         """
         Send push message. Input parameters:
 
         uri - subscription uri
         payload - message payload (see help for subclasses)
         message_id - optional message id (UUID)
-        callback_url - optional callback url (only for authenticated web services)
+        callback_uri - optional callback url (only for authenticated web services)
+        cert - optional (only for authenticated web services)
+            If string, path to ssl client cert file (.pem). 
+            If tuple, (‘cert’, ‘key’) pair. 
+            For more info see requests library documentation.
 
         Returns message status dictionary with the following elements:
 
@@ -126,16 +130,7 @@ class MPNSBase(object):
 
         data = self.prepare_payload(payload)
         
-        # put cert and key into tuple unless it's in one file
-        certs = None
-        if cert is not None and key is not None:
-            certs = (cert, key)
-        elif cert is not None:
-            certs = cert
-        elif key is not None:
-            certs = key
-
-        res = requests.post(uri, data=data, headers=self.headers, cert=certs)
+        res = requests.post(uri, data=data, headers=self.headers, cert=cert)
         result = self.parse_response(res)
         if debug:
             result['request'] = {'data': data, 'headers': dict(self.headers) }
