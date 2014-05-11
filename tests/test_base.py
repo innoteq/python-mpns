@@ -8,6 +8,60 @@ from mpns import MPNSTile
 class test_base(unittest.TestCase):
 	
 	@httpretty.activate
+	def test_parse_response_200(self):
+		#Mocking response headers
+		test_tile_URI = "http://testuri.com/"
+		httpretty.register_uri(httpretty.POST, 
+								test_tile_URI,
+								content_type='text/json',
+								adding_headers={
+									"x-deviceconnectionstatus":"Test",
+									"x-notificationstatus":"Test",
+									"x-subscriptionstatus":"Test",
+									"x-messageid":"Test"},
+								status=200)
+
+		#Creating MPNS object, posting request and submitting response to parse_response
+		test_tile = MPNSTile()		
+		response = requests.post(test_tile_URI)
+		status = test_tile.parse_response(response)
+
+		#Checking status code, error message and ensuring other headers passed without unaltered
+		assert status['http_status_code'] == 200
+		assert status['device_connection_status'] == 'Test'
+		assert status['subscription_status'] == 'Test'
+		assert status['notification_status'] == 'Test'
+		assert status['message_id'] == 'Test'
+		
+	@httpretty.activate
+	def test_parse_response_200_queue_full(self):
+		#Mocking response headers
+		test_tile_URI = "http://testuri.com/"
+		httpretty.register_uri(httpretty.POST, 
+								test_tile_URI,
+								content_type='text/json',
+								adding_headers={
+									"x-deviceconnectionstatus":"Test",
+									"x-notificationstatus":"QueueFull",
+									"x-subscriptionstatus":"Test",
+									"x-messageid":"Test"},
+								status=200)
+
+		#Creating MPNS object, posting request and submitting response to parse_response
+		test_tile = MPNSTile()		
+		response = requests.post(test_tile_URI)
+		status = test_tile.parse_response(response)
+
+		#Checking status code, error message and ensuring other headers passed without unaltered
+		assert status['http_status_code'] == 200
+		assert status['error'] == 'Queue full, try again later'
+		assert status['backoff_seconds'] == 60
+		assert status['device_connection_status'] == 'Test'
+		assert status['subscription_status'] == 'Test'
+		assert status['notification_status'] == 'QueueFull'
+		assert status['message_id'] == 'Test'
+	
+	@httpretty.activate
 	def test_parse_response_400(self):
 		#Mocking response headers
 		test_tile_URI = "http://testuri.com/"
@@ -26,7 +80,7 @@ class test_base(unittest.TestCase):
 		response = requests.post(test_tile_URI)
 		status = test_tile.parse_response(response)
 
-		#Checking status code, error message and ensuring other headers passed properly
+		#Checking status code, error message and ensuring other headers passed without unaltered
 		assert status['http_status_code'] == 400
 		assert status['error'] == 'Bad Request - invalid payload or subscription URI'
 		assert status['device_connection_status'] == 'Test'
