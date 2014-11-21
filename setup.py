@@ -13,7 +13,7 @@ setup(
     version=__version__,
 
     # Package dependencies.
-    install_requires=['requests==1.1.0'],
+    install_requires=['requests>=2.0'],
 
     # Metadata for PyPI.
     author='Max Arnold',
