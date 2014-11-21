@@ -27,7 +27,7 @@ MPNS overview:             http://msdn.microsoft.com/en-us/library/ff402558%28v=
 
 Protocol specification:    http://msdn.microsoft.com/en-us/library/hh202945%28v=vs.92%29.aspx
 
-WP8 enhancements:          http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202948%28v=vs.105%29.aspx
+WP8 enhancements:          http://msdn.microsoft.com/en-us/library/windows/apps/jj662933%28v=vs.105%29.aspx
 
 Error codes:               http://msdn.microsoft.com/en-us/library/ff941100%28v=VS.92%29.aspx
 

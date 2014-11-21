@@ -101,8 +101,8 @@ class MPNSBase(object):
         message_id - optional message id (UUID)
         callback_uri - optional callback url (only for authenticated web services)
         cert - optional (only for authenticated web services)
-            If string, path to ssl client cert file (.pem). 
-            If tuple, (‘cert’, ‘key’) pair. 
+            If string, path to ssl client cert file (.pem).
+            If tuple, (‘cert’, ‘key’) pair.
             For more info see requests library documentation.
 
         Returns message status dictionary with the following elements:
@@ -129,7 +129,7 @@ class MPNSBase(object):
             self.headers[self.HEADER_CALLBACK_URI] = str(callback_uri)
 
         data = self.prepare_payload(payload)
-        
+
         res = requests.post(uri, data=data, headers=self.headers, cert=cert)
         result = self.parse_response(res)
         if debug:
@@ -210,6 +210,7 @@ class MPNSToast(MPNSBase):
         toast = ET.SubElement(root, '{WPNotification}Toast')
         self.optional_subelement(toast, '{WPNotification}Text1', 'text1', payload)
         self.optional_subelement(toast, '{WPNotification}Text2', 'text2', payload)
+        self.optional_subelement(toast, '{WPNotification}Sound', 'sound', payload)
         self.optional_subelement(toast, '{WPNotification}Param', 'param', payload) # TODO: validate param (/ and length)
         return self.serialize_tree(ET.ElementTree(root))
 
