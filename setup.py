@@ -22,7 +22,7 @@ setup(
     url='http://github.com/max-arnold/python-mpns',
     keywords='mobile push notification microsoft mpns windows phone',
     description='Python module for Microsoft Push Notification Service (MPNS) for Windows Phone',
-    long_description=open(os.path.abspath(os.path.join(os.path.dirname(__file__), 'README.md')), 'rb').read(),
+    long_description=open(os.path.abspath(os.path.join(os.path.dirname(__file__), 'README.md')), 'r').read(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
