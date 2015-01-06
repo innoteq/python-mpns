@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from cStringIO import StringIO
+import io
 
 try:
     register_namespace = ET.register_namespace
@@ -34,9 +34,9 @@ class MPNSBase(object):
         self.headers[self.HEADER_TARGET] = target
 
     def serialize_tree(self, tree):
-        file = StringIO()
+        file = io.BytesIO()
         tree.write(file, encoding='utf-8')
-        contents = "<?xml version='1.0' encoding='utf-8'?>" + file.getvalue()
+        contents = "<?xml version='1.0' encoding='utf-8'?>" + file.getvalue().decode('utf-8')
         file.close()
         return contents
 
