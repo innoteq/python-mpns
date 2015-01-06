@@ -102,7 +102,7 @@ class MPNSBase(object):
         callback_uri - optional callback url (only for authenticated web services)
         cert - optional (only for authenticated web services)
             If string, path to ssl client cert file (.pem).
-            If tuple, (‘cert’, ‘key’) pair.
+            If tuple, ('cert', 'key') pair.
             For more info see requests library documentation.
 
         Returns message status dictionary with the following elements:
