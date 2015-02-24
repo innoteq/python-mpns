@@ -1,10 +1,18 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import httpretty
 import requests
 
-from mpns import MPNSTile
+from mpns import MPNSTile, MPNSToast
 
 
 class Test_Base(object):
+    XML_TOAST = ("""<?xml version="1.0" encoding="utf-8"?>"""
+                 """<wp:Notification xmlns:wp="WPNotification">"""
+                 """<wp:Toast><wp:Text1>{text1}</wp:Text1>"""
+                 """</wp:Toast></wp:Notification>""")
+
     @httpretty.activate
     def test_parse_response_200(self):
         # Mocking response headers
@@ -289,3 +297,9 @@ class Test_Base(object):
         assert status['subscription_status'] == 'Test'
         assert status['notification_status'] == 'Test'
         assert status['message_id'] == 'Test'
+
+    def test_prepare_toast_payload(self):
+        test_toast = MPNSToast()
+        payload = {'text1': 'Дядя Фёдор, а у тебя только один неправильный бутерброд был?'}
+        prepared = self.XML_TOAST.format(**payload).encode('utf-8')
+        assert test_toast.prepare_payload(payload) == prepared

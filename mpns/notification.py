@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import xml.etree.ElementTree as ET
 import io
 
@@ -34,10 +37,13 @@ class MPNSBase(object):
         self.headers[self.HEADER_TARGET] = target
 
     def serialize_tree(self, tree):
-        file = io.BytesIO()
-        tree.write(file, encoding='utf-8')
-        contents = "<?xml version='1.0' encoding='utf-8'?>" + file.getvalue().decode('utf-8')
-        file.close()
+        buffer = io.BytesIO()
+        # http://bugs.python.org/issue15811
+        # TODO: use xml_declaration=True for python>=2.7
+        tree.write(buffer, encoding=str('utf-8'))
+        contents = ('<?xml version="1.0" encoding="utf-8"?>'.encode('utf-8') +
+                    buffer.getvalue())
+        buffer.close()
         return contents
 
     def optional_attribute(self, element, attribute, payload_param, payload):
@@ -229,4 +235,3 @@ class MPNSRaw(MPNSBase):
 
     def prepare_payload(self, payload):
         return payload
-
